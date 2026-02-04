@@ -1,0 +1,313 @@
+<%- include('partials/header') %>
+
+    <!-- Page Specific Overrides for 3D Background compatibility -->
+    <!-- Page Specific Overrides for 3D Background compatibility -->
+    <!-- (Body transparency handled globally in style.css now) -->
+
+    <div class="container" style="padding-top: 100px;">
+
+        <!-- Header Section -->
+        <div style="text-align: center; margin-bottom: 3rem;">
+            <h2 class="hero-title" style="font-size: 3rem; margin-bottom: 0.5rem; text-transform: uppercase;">India
+                Market Watch</h2>
+            <p style="color: var(--text-secondary);">Live NSE/BSE Data Stream & Tech Headlines</p>
+            <div
+                style="display: inline-block; padding: 0.5rem 1rem; background: rgba(0, 255, 136, 0.1); border: 1px solid rgba(0, 255, 136, 0.3); border-radius: 50px; margin-top: 1rem;">
+                <i class="fa-solid fa-circle fa-beat" style="color: #00ff88; font-size: 0.7rem; margin-right: 8px;"></i>
+                REAL-TIME FEED
+            </div>
+        </div>
+
+        <!-- Ticker Tape (Stock Market) -->
+        <div class="glass-card"
+            style="padding: 1rem; overflow: hidden; white-space: nowrap; margin-bottom: 2rem; position: relative;">
+            <div class="ticker-track" id="ticker-track" style="display: inline-block;">
+                <!-- Content injected via JS for infinite loop -->
+                <span style="color: var(--text-secondary);">Connecting to Satellite Feed...</span>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+
+            <!-- Stock Market Column -->
+            <div>
+                <h3 style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px;">
+                    <i class="fa-solid fa-indian-rupee-sign" style="color: #00ff88;"></i> Top Movers (NSE)
+                </h3>
+
+                <!-- Stocks List -->
+                <div id="stock-list" style="display: grid; grid-template-columns: 1fr; gap: 1rem;">
+                    <div class="glass-card" style="text-align: center; color: var(--text-secondary);">
+                        <i class="fa-solid fa-circle-notch fa-spin"></i> Syncing Data...
+                    </div>
+                </div>
+
+                <!-- Mini Chart Placeholder -->
+                <div class="glass-card" style="margin-top: 1.5rem; height: 250px; padding: 1rem; position: relative;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h4 style="font-size: 0.9rem; color: var(--text-secondary);">NIFTY 50 Live Index</h4>
+                        <span
+                            style="font-size: 0.7rem; color: var(--neon-blue); border: 1px solid var(--neon-blue); padding: 2px 6px; border-radius: 4px;">LIVE</span>
+                    </div>
+                    <canvas id="marketChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Tech News Column -->
+            <div>
+                <h3 style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px;">
+                    <i class="fa-solid fa-newspaper" style="color: var(--neon-blue);"></i> India Tech Radar
+                </h3>
+                <div id="tech-news-feed" style="display: flex; flex-direction: column; gap: 1rem;">
+                    <!-- News items injected via JS -->
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Libraries -->
+    <script src="/js/chart.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+
+    <!-- 3D Background Script is now Global in Footer -->
+
+    <script>
+        // --- Configuration ---
+        const socket = io();
+
+        // --- State ---
+        let stocks = [];
+        const NEWS_UPDATE_INTERVAL = 8000;   // 8 seconds
+
+        // --- Mock Data: India Tech News (Still static for now, could be moved to server) ---
+        const newsHeadlines = [
+            { category: "Telecom", title: "Jio launches 6G testing labs in Bangalore", summary: "Reliance Jio aims to lead the next gen spectrum race with indigenous tech." },
+            { category: "Startups", title: "Zomato AI chatbot mostly reliable says CEO", summary: "Deepinder Goyal shares insights on the new 'Foodie AI' integration." },
+            { category: "Space", title: "ISRO announces Chandrayaan-4 timeline", summary: "New mission aims for lunar sample return by 2028." },
+            { category: "EV", title: "Ola Electric IPO oversubscribed 50x", summary: "Market shows massive confidence in India's EV revolution." },
+            { category: "Semicon", title: "Tata Electronics begins microchip exports", summary: "First batch of made-in-India chips leaves for Taiwan." },
+            { category: "Fintech", title: "UPI transactions hit 12 Billion in a month", summary: "NPCI confirms record breaking digital payment adoption." }
+        ];
+
+        // --- DOM Elements ---
+        const stockListEl = document.getElementById('stock-list');
+        const tickerTrackEl = document.getElementById('ticker-track');
+        const newsFeedEl = document.getElementById('tech-news-feed');
+
+        // --- Init ---
+        function init() {
+            // Wait for socket data, or render empty first?
+            // Actually let's assume socket sends data immediately on connection or we wait for next tick
+            // Ideally server should send 'initData' on connection, but for now we wait for tick.
+            // renderNews(); // Start with static if needed, but socket will overwrite.
+            initChart();
+        }
+
+        // --- Real-time Socket Listeners ---
+        socket.on('marketUpdate', (data) => {
+            stocks = data.stocks;
+            renderStocks();
+            renderTicker();
+            updateChart();
+        });
+
+        socket.on('newsUpdate', (data) => {
+            newsHeadlines = data;
+            renderNews();
+        });
+
+        // --- Functions ---
+        function getChange(price, prev) {
+            const changeVal = price - prev;
+            const percent = ((changeVal / prev) * 100).toFixed(2);
+            return {
+                val: changeVal.toFixed(2),
+                percent: percent,
+                isUp: changeVal >= 0
+            };
+        }
+
+        function renderStocks() {
+            stockListEl.innerHTML = '';
+            stocks.forEach(s => {
+                if (s.type !== 'stock') return; // Only show individual stocks here
+
+                const change = getChange(s.price, s.prevClose);
+                const color = change.isUp ? '#00ff88' : '#ff4444';
+                const icon = change.isUp ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down';
+                // Subtle flash effect on update
+                const flashClass = 'flash-update';
+
+                const el = document.createElement('div');
+                el.className = 'glass-card';
+                el.style.display = 'flex';
+                el.style.justifyContent = 'space-between';
+                el.style.alignItems = 'center';
+                el.style.transition = 'all 0.3s';
+
+                el.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div style="width: 40px; height: 40px; background: rgba(255,255,255,0.05); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                        <span style="font-weight: bold; font-size: 0.8rem; color: var(--neon-blue);">${s.sym.substring(0, 1)}</span>
+                    </div>
+                    <div>
+                        <h4 style="margin: 0; font-size: 1rem;">${s.sym}</h4>
+                        <span style="color: var(--text-secondary); font-size: 0.75rem;">${s.name}</span>
+                    </div>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-weight: 700; font-size: 1.1rem;">₹${s.price.toFixed(2)}</div>
+                    <div style="color: ${color}; font-size: 0.85rem;">
+                        ${change.isUp ? '+' : ''}${change.percent}% <i class="fa-solid ${icon}"></i>
+                    </div>
+                </div>
+            `;
+                stockListEl.appendChild(el);
+            });
+        }
+
+        function renderTicker() {
+            let html = '';
+            // Duplicate list for seamless loop logic if needed, or just list all
+            const loopStocks = [...stocks, ...stocks]; // Simple doubling for scrolling
+
+            loopStocks.forEach(s => {
+                const change = getChange(s.price, s.prevClose);
+                const color = change.isUp ? '#00ff88' : '#ff4444';
+                html += `
+                <span style="margin: 0 2rem; font-family: monospace; font-size: 1.1rem; display: inline-block;">
+                    <span style="color: var(--text-secondary); font-weight: 600;">${s.sym}</span> 
+                    <span style="font-weight: bold; margin: 0 5px;">₹${s.price.toFixed(2)}</span> 
+                    <span style="color: ${color}; font-size: 0.9rem;">${change.isUp ? '▲' : '▼'}${change.percent}%</span>
+                </span>
+            `;
+            });
+
+            // Only update if innerHTML is drastically different to avoid restarting marquee? 
+            // Actually, replacing innerHTML restarts CSS animation usually. 
+            // Better: Update values inside spans if matched. 
+            // For simplicity, we just replace. The marquee might jump, but it's acceptable for MVP.
+            tickerTrackEl.innerHTML = html;
+
+            // Ensure animation is running
+            if (!tickerTrackEl.style.animation) {
+                tickerTrackEl.style.animation = 'scroll 40s linear infinite';
+            }
+
+            if (!document.getElementById('ticker-style')) {
+                const style = document.createElement('style');
+                style.id = 'ticker-style';
+                style.innerHTML = `
+                @keyframes scroll {
+                    0% { transform: translateX(0); }
+                    100% { transform: translateX(-50%); } 
+                }
+            `;
+                document.head.appendChild(style);
+            }
+        }
+
+        function renderNews() {
+            newsFeedEl.innerHTML = '';
+            newsHeadlines.slice(0, 4).forEach(news => {
+                const el = document.createElement('div');
+                el.className = 'glass-card';
+                el.style.cssText = 'padding: 1.5rem; border-left: 3px solid var(--neon-blue); animation: fadeIn 0.5s ease;';
+                el.innerHTML = `
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <span style="font-size: 0.7rem; color: var(--neon-purple); text-transform: uppercase; letter-spacing: 1px; font-weight: bold;">${news.category}</span>
+                    <span style="font-size: 0.7rem; color: var(--text-secondary);">LIVE</span>
+                </div>
+                <h4 style="margin: 0.5rem 0; font-size: 1.1rem;">${news.title}</h4>
+                <p style="font-size: 0.9rem; color: #ccc; margin-bottom: 0.5rem;">${news.summary}</p>
+            `;
+                newsFeedEl.appendChild(el);
+            });
+        }
+
+        function updateChart() {
+            const chart = Chart.getChart("marketChart");
+            if (chart && stocks.length > 0) {
+                const nifty = stocks.find(s => s.sym === 'NIFTY 50');
+                if (!nifty) return;
+
+                const len = chart.data.datasets[0].data.length;
+
+                // Push new data
+                chart.data.datasets[0].data.push(nifty.price);
+                chart.data.labels.push(new Date().toLocaleTimeString());
+
+                // Maintain window
+                if (len > 30) {
+                    chart.data.datasets[0].data.shift();
+                    chart.data.labels.shift();
+                }
+                chart.update('none'); // 'none' for performance
+            }
+        }
+
+        function rotateNews() {
+            // Move first item to end
+            const item = newsHeadlines.shift();
+            newsHeadlines.push(item);
+            renderNews();
+        }
+
+        function initChart() {
+            const ctx = document.getElementById('marketChart').getContext('2d');
+
+            // Initial empty state
+            const initialData = Array(30).fill(null);
+            const initialLabels = Array(30).fill('');
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: initialLabels,
+                    datasets: [{
+                        label: 'NIFTY 50',
+                        data: initialData,
+                        fill: true,
+                        borderColor: '#00ff88',
+                        backgroundColor: (context) => {
+                            const ctx = context.chart.ctx;
+                            const gradient = ctx.createLinearGradient(0, 0, 0, 200);
+                            gradient.addColorStop(0, 'rgba(0, 255, 136, 0.2)');
+                            gradient.addColorStop(1, 'rgba(0, 255, 136, 0)');
+                            return gradient;
+                        },
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: false,
+                    interaction: {
+                        intersect: false,
+                        mode: 'index',
+                    },
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { display: false },
+                        y: {
+                            display: true,
+                            position: 'right',
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            ticks: { color: '#666', font: { size: 10 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Run
+        init();
+
+    </script>
+
+    <%- include('partials/footer') %>

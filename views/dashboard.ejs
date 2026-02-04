@@ -1,0 +1,89 @@
+<%- include('partials/header') %>
+    <div class="container" style="padding-top: 100px;">
+        <h2 style="margin-bottom: 2rem;">Command Deck</h2>
+
+        <div
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
+            <!-- Stat Cards -->
+            <div class="glass-card">
+                <h4 style="color: var(--text-secondary); margin-bottom: 0.5rem;">System Status</h4>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div
+                        style="width: 10px; height: 10px; background: #00ff00; border-radius: 50%; box-shadow: 0 0 10px #00ff00;">
+                    </div>
+                    <span style="font-size: 1.5rem; font-weight: 700;">Online</span>
+                </div>
+            </div>
+            <div class="glass-card">
+                <h4 style="color: var(--text-secondary); margin-bottom: 0.5rem;">Active Users</h4>
+                <span style="font-size: 1.5rem; font-weight: 700; color: var(--neon-blue);">12</span>
+            </div>
+            <div class="glass-card">
+                <h4 style="color: var(--text-secondary); margin-bottom: 0.5rem;">Storage</h4>
+                <span style="font-size: 1.5rem; font-weight: 700; color: var(--neon-purple);">45%</span>
+            </div>
+        </div>
+
+        <h3 style="margin-bottom: 1.5rem;">Applications</h3>
+        <div
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
+            <a href="http://nextcloud.jokerhub.online" target="_blank" class="glass-card"
+                style="text-decoration: none; transition: transform 0.2s;">
+                <div style="display: flex; flex-direction: column; align-items: center; text-align: center; gap: 1rem;">
+                    <i class="fa-solid fa-cloud" style="font-size: 3rem; color: #0082c9;"></i>
+                    <div>
+                        <h4 style="color: var(--text-primary); margin-bottom: 0.2rem;">Nextcloud</h4>
+                        <span style="color: var(--text-secondary); font-size: 0.9rem;">Private Cloud Storage</span>
+                    </div>
+                </div>
+            </a>
+            <a href="http://casoapp.jokerhub.online" target="_blank" class="glass-card"
+                style="text-decoration: none; transition: transform 0.2s;">
+                <div style="display: flex; flex-direction: column; align-items: center; text-align: center; gap: 1rem;">
+                    <i class="fa-solid fa-house-signal" style="font-size: 3rem; color: #ff9900;"></i>
+                    <div>
+                        <h4 style="color: var(--text-primary); margin-bottom: 0.2rem;">Caso OS</h4>
+                        <span style="color: var(--text-secondary); font-size: 0.9rem;">Smart Home OS</span>
+                    </div>
+                </div>
+            </a>
+            <% if (user && user.role==='admin' ) { %>
+                <a href="/admin" class="glass-card"
+                    style="text-decoration: none; transition: transform 0.2s; border: 1px solid var(--neon-purple);">
+                    <div
+                        style="display: flex; flex-direction: column; align-items: center; text-align: center; gap: 1rem;">
+                        <i class="fa-solid fa-user-shield" style="font-size: 3rem; color: var(--neon-purple);"></i>
+                        <div>
+                            <h4 style="color: var(--text-primary); margin-bottom: 0.2rem;">Admin Console</h4>
+                            <span style="color: var(--text-secondary); font-size: 0.9rem;">Manage Users & Access</span>
+                        </div>
+                    </div>
+                </a>
+                <% } %>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem;">
+            <div class="glass-card">
+                <h3 style="margin-bottom: 1.5rem;">System Logs</h3>
+                <div style="font-family: monospace; color: var(--text-secondary); line-height: 1.6;">
+                    <p><span style="color: grey;">[12:00:01]</span> System initialized.</p>
+                    <p><span style="color: grey;">[12:01:45]</span> User login detected: Admin.</p>
+                    <p><span style="color: grey;">[12:05:22]</span> Firewall updated rules.</p>
+                    <p><span style="color: grey;">[12:10:00]</span> Backup completed successfully.</p>
+                </div>
+            </div>
+
+            <div class="glass-card">
+                <h3 style="margin-bottom: 1.5rem;">Quick Actions</h3>
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    <button class="btn btn-glass" style="text-align: left;"><i class="fa-solid fa-power-off"></i> Reboot
+                        Server</button>
+                    <button class="btn btn-glass" style="text-align: left;"><i class="fa-solid fa-database"></i> Backup
+                        Now</button>
+                    <button class="btn btn-glass" style="text-align: left;"><i class="fa-solid fa-users"></i> Manage
+                        Users</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <%- include('partials/footer') %>

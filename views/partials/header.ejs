@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= title %>
+    </title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Outfit:wght@400;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Styles -->
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- FontAwesome (Local) -->
+    <link rel="stylesheet" href="/css/fontawesome.css">
+</head>
+
+<body>
+
+    <nav class="navbar" id="navbar">
+        <a href="/" class="logo">
+            <i class="fa-solid fa-atom fa-spin" style="--fa-animation-duration: 3s; color: var(--neon-purple);"></i>
+            JOKER<span>HUB</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="/" class="nav-link">Home</a></li>
+            <li><a href="/dashboard" class="nav-link">Dashboard</a></li>
+            <li><a href="/chat" class="nav-link">Chat</a></li>
+            <li><a href="/intel" class="nav-link">News & Stocks</a></li>
+        </ul>
+        <% if (page !=='auth' ) { %>
+            <div class="auth-buttons" style="display: flex; align-items: center; gap: 15px;">
+                <% if (locals.user) { %>
+                    <span style="color: var(--text-primary); font-weight: 600;">Hi, <%= user.name %></span>
+                    <% if (user.role==='admin' ) { %>
+                        <a href="/admin" class="nav-link" style="color: var(--neon-purple);"><i
+                                class="fa-solid fa-shield-halved"></i> Admin</a>
+                        <% } %>
+                            <a href="/logout" class="btn btn-glass"
+                                style="border-color: #ff4444; color: #ff4444;">Logout</a>
+                            <% } else { %>
+                                <a href="/login" class="btn btn-glass">Login</a>
+                                <a href="/register" class="btn btn-primary" style="margin-left: 10px;">Register</a>
+                                <% } %>
+            </div>
+            <% } %>
+    </nav>
+
+    <main>

@@ -1,0 +1,55 @@
+<%- include('partials/header') %>
+
+    <div class="antigravity-scene" id="home">
+        <div class="container hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title">Defy<br>Gravity.</h1>
+                <p class="hero-subtitle">Experience the future of web hosting on your own terms. Secure, Private, and
+                    Boundless.</p>
+                <div class="cta-group" style="opacity: 0; animation: fadeUp 1s ease-out forwards 0.9s;">
+                    <a href="/register" class="btn btn-primary">Get Started</a>
+                    <a href="#features" class="btn btn-glass" style="margin-left: 15px;">Explore</a>
+                </div>
+            </div>
+
+            <!-- 3D Elements -->
+            <div class="cube-wrapper">
+                <div class="cube">
+                    <div class="cube-face plane-1"><i class="fa-solid fa-shield-halved"></i></div>
+                    <div class="cube-face plane-2"><i class="fa-solid fa-rocket"></i></div>
+                    <div class="cube-face plane-3"><i class="fa-solid fa-user-secret"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section (Glassmorphism) -->
+    <section id="features" style="padding: 5rem 5%; position: relative; z-index: 10;">
+        <h2 style="text-align: center; margin-bottom: 3rem; font-size: 2.5rem;">Core Systems</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+            <div class="glass-card float-slow">
+                <i class="fa-solid fa-network-wired"
+                    style="font-size: 2rem; color: var(--neon-blue); margin-bottom: 1rem;"></i>
+                <h3 style="color: var(--neon-blue); margin-bottom: 1rem;">Zero Trust</h3>
+                <p style="color: var(--text-secondary);">Powered by Cloudflare Tunnels (<code>cloudflared</code>). No
+                    open ports, complete isolation from the public net.</p>
+            </div>
+            <div class="glass-card float-medium" style="animation-delay: 1s;">
+                <i class="fa-solid fa-layer-group"
+                    style="font-size: 2rem; color: var(--neon-purple); margin-bottom: 1rem;"></i>
+                <h3 style="color: var(--neon-purple); margin-bottom: 1rem;">Cockpit & Nextcloud</h3>
+                <p style="color: var(--text-secondary);">Integrated with Cockpit for monitoring and Nextcloud for
+                    storage. All in one hub.</p>
+                <a href="https://cockpitapp.jokerhub.online" target="_blank"
+                    style="color: white; margin-top: 10px; display: inline-block;">Launch Cockpit &rarr;</a>
+            </div>
+            <div class="glass-card float-fast" style="animation-delay: 0.5s;">
+                <i class="fa-solid fa-fingerprint" style="font-size: 2rem; color: white; margin-bottom: 1rem;"></i>
+                <h3 style="color: white; margin-bottom: 1rem;">Secure Access</h3>
+                <p style="color: var(--text-secondary);">Role-based access control with Argon2 hashing and secure
+                    session management.</p>
+            </div>
+        </div>
+    </section>
+
+    <%- include('partials/footer') %>

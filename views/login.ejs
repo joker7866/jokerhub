@@ -1,0 +1,15 @@
+<%- include('partials/header') %>
+    <div class="container" style="display: flex; justify-content: center; align-items: center; min-height: 80vh;">
+        <div class="glass-card auth-container">
+            <h2 style="text-align: center; margin-bottom: 2rem;">Command Access</h2>
+            <form action="/login" method="POST"> <!-- POST to same route or specific API -->
+                <input type="email" name="email" class="form-input" placeholder="Email Address" required>
+                <input type="password" name="password" class="form-input" placeholder="Access Code" required>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Initialize Session</button>
+            </form>
+            <p style="text-align: center; margin-top: 1rem; color: var(--text-secondary);">
+                New Entry? <a href="/register" style="color: var(--neon-blue);">Register</a>
+            </p>
+        </div>
+    </div>
+    <%- include('partials/footer') %>

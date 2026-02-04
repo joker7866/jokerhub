@@ -1,0 +1,41 @@
+<%- include('partials/header') %>
+    <div class="container" style="display: flex; justify-content: center; align-items: center; min-height: 80vh;">
+        <div class="glass-card auth-container">
+            <h2 style="text-align: center; margin-bottom: 2rem;">New Personnel</h2>
+            <form action="/register" method="POST">
+                <input type="text" name="username" class="form-input" placeholder="Codename" required>
+                <input type="email" name="email" class="form-input" placeholder="Email Address" required>
+                <input type="password" id="password" name="password" class="form-input" placeholder="Password" required
+                    oninput="checkStrength()">
+                <div id="strength-bar"
+                    style="height: 4px; background: #333; margin-bottom: 1rem; border-radius: 2px; transition: 0.3s; width: 0%;">
+                </div>
+
+                <input type="password" name="confirm_password" class="form-input" placeholder="Confirm Password"
+                    required>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Create Identity</button>
+            </form>
+            <p style="text-align: center; margin-top: 1rem; color: var(--text-secondary);">
+                Already authorized? <a href="/login" style="color: var(--neon-blue);">Login</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        function checkStrength() {
+            const pass = document.getElementById('password').value;
+            const bar = document.getElementById('strength-bar');
+            let strength = 0;
+            if (pass.length > 5) strength += 20;
+            if (pass.match(/[a-z]+/)) strength += 20;
+            if (pass.match(/[A-Z]+/)) strength += 20;
+            if (pass.match(/[0-9]+/)) strength += 20;
+            if (pass.match(/[$@#&!]+/)) strength += 20;
+
+            bar.style.width = strength + '%';
+            if (strength < 40) bar.style.background = 'red';
+            else if (strength < 80) bar.style.background = 'orange';
+            else bar.style.background = 'var(--neon-blue)';
+        }
+    </script>
+    <%- include('partials/footer') %>

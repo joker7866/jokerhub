@@ -1,0 +1,23 @@
+[
+  {
+    "id": "1",
+    "username": "Commander",
+    "email": "admin@jokerhub.online",
+    "password": "$2a$10$KM4WOkKH//qROH/hBbsFPuC3rM8ccdya4tdiFhuL6/KH.ImkiC8iu",
+    "role": "admin"
+  },
+  {
+    "id": "1769154894721",
+    "username": "TesterBot",
+    "email": "tester@chat.com",
+    "password": "$2a$10$6KYgIgSSIdsterGbdRvkEemKvdwPNLjL.Zmsx2IuEJ3mijPUHwwLS",
+    "role": "user"
+  },
+  {
+    "id": "1770183363787",
+    "username": "test1",
+    "email": "test1@joker.com",
+    "password": "$2a$10$hAR99gxFsb00LTogQ6bKbefjNVuRmnNBHyCw5cSflpKwwovhuxO3C",
+    "role": "user"
+  }
+]
